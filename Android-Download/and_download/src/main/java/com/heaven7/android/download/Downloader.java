@@ -74,7 +74,7 @@ public final class Downloader {
     }
     /**
      * observe all download tasks at fixed period.
-     * @param ids the task ids to download.
+     * @param ids the task ids to observe.
      * @param scheduler the scheduler
      * @param periodMills the period in mills
      * @return the disposable
