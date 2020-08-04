@@ -30,19 +30,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void onClickDownload(View view) {
         String url = "https://d2.aoc5566.com//android2/20190325/360shoujizhushou_ali213.apk";
-        File file = new File(getCacheDir(), FileUtils.getSimpleFileName(url));
-        if(file.exists()){
-            Toaster.show(this, "already exists. " + file.getAbsolutePath());
-            return;
-        }
         DownloadTask task = new DownloadTask();
         task.setUrl(url);
-       // task.setSaveUri(FileProviderUtils.getUriForFile(this, file));
-        task.setSavePath(file.getAbsolutePath()); //must be file
         long id = Downloader.getDownloadHelper().download(task, new SimpleDownloadCallback(Downloader.getDownloadHelper()) {
             @Override
             protected void onDownloadSuccess(Context context, DownloadTask task) {
                 Logger.d(TAG, "onDownloadSuccess", task.getUrl());
+                Logger.d(TAG, "onDownloadSuccess", task.getSavePath());
             }
 
             @Override

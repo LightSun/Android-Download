@@ -48,12 +48,13 @@ public final class DownloadHelper implements DownloadChangeObserver.Callback {
     }
     public long download(DownloadTask task, IDownloadCallback callback) {
         File file = new File(mContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
-                FileUtils.getSimpleFileName(task.getSavePath()));
+                FileUtils.getSimpleFileName(task.getUrl()));
 
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(task.getUrl()));
         request.setDestinationUri(Uri.fromFile(file));
+        task.setSavePath(file.getAbsolutePath());
 
-        callback.onPreDownload(mContext,task, request);
+        callback.onPreDownload(mContext, task, request);
 
         long id = mDM.enqueue(request);
         task.setId(id);
@@ -223,7 +224,7 @@ public final class DownloadHelper implements DownloadChangeObserver.Callback {
 
     @Override
     public void onContentChanged(boolean selfChange) {
-        Log.d("DH", "onContentChanged: selfChange = " + selfChange);
+        //Log.d("DH", "onContentChanged: selfChange = " + selfChange);
         mTask = mScheduler.newWorker().schedule(new Runnable() {
             @Override
             public void run() {
