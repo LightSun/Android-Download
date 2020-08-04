@@ -19,7 +19,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-       <!-- <provider
+       <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.AppFileProvider"
             android:exported="false"
@@ -28,7 +28,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/app_provider" />
 
-        </provider>-->
+        </provider>
     </application>
 
 </manifest>

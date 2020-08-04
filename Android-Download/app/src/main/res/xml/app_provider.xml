@@ -8,28 +8,4 @@
     <external-path
         name="beta_external_files_path"
         path="Android/data/" />
-
-    <cache-path
-        name="all"
-        path="."/>
-    <files-path
-        name="my_images"
-        path="images/" />
-    <external-files-path
-        name="my_download"
-        path="/" />
-    <external-cache-path
-        name="name"
-        path="." />
-    <external-path
-        name="gallery_photos"
-        path="."/>
-
-    <external-path
-        name="document"
-        path="Documents/"/>
-
-    <external-path
-        name="download"
-        path="." />
 </paths>

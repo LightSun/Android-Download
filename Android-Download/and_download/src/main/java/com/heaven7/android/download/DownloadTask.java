@@ -114,7 +114,6 @@ public class DownloadTask {
     public static class Builder {
         private String url;
         private String savePath;
-        private Uri saveUri; //save uri
         private long id;
         private long totalBytes;     // init is -1
         private long downloadBytes;
@@ -131,11 +130,6 @@ public class DownloadTask {
 
         public Builder setSavePath(String savePath) {
             this.savePath = savePath;
-            return this;
-        }
-
-        public Builder setSaveUri(Uri saveUri) {
-            this.saveUri = saveUri;
             return this;
         }
 
