@@ -3,7 +3,20 @@ package com.heaven7.android.download;
 import android.app.DownloadManager;
 import android.content.Context;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public abstract class SimpleDownloadCallback implements IDownloadCallback {
+
+    private final AtomicBoolean mSuccessed = new AtomicBoolean();
+    private final DownloadHelper dh;
+
+    public SimpleDownloadCallback(DownloadHelper dh) {
+        this.dh = dh;
+    }
+
+    public DownloadHelper getDownloadHelper() {
+        return dh;
+    }
 
     @Override
     public void onPreDownload(Context mContext, DownloadTask task, DownloadManager.Request request) {
@@ -15,16 +28,15 @@ public abstract class SimpleDownloadCallback implements IDownloadCallback {
 
         //request.setTitle("通知标题，随意修改");
         //request.setDescription("新版***下载中...");
-
     }
     @Override
     public void startViewDownload(Context context, DownloadTask task) {
-
+        System.out.println("startViewDownload");
     }
 
     @Override
     public void onNotificationClicked(Context context, DownloadTask task) {
-
+        System.out.println("onNotificationClicked");
     }
 
     @Override
@@ -40,7 +52,9 @@ public abstract class SimpleDownloadCallback implements IDownloadCallback {
                 onDownloadRunning(context, task);
                 break;
             case DownloadHelper.STATUS_SUCCESSFUL:
-                onDownloadSuccess(context, task);
+                if(mSuccessed.compareAndSet(false, true)){
+                    onDownloadSuccess(context, task);
+                }
                 break;
             case DownloadHelper.STATUS_FAILED:
                 onDownloadFailed(context, task);

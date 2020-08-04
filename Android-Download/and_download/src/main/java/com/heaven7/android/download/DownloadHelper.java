@@ -7,10 +7,15 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
+import android.util.Log;
 
 import androidx.collection.LongSparseArray;
 
+import com.heaven7.java.base.util.Disposable;
+import com.heaven7.java.base.util.FileUtils;
 import com.heaven7.java.base.util.Predicates;
+import com.heaven7.java.base.util.Scheduler;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -21,7 +26,7 @@ import java.util.List;
  * the download helper use the system download manager to download
  * @author heaven7
  */
-public final class DownloadHelper {
+public final class DownloadHelper implements DownloadChangeObserver.Callback {
 
     public final static int STATUS_PENDING = DownloadManager.STATUS_PENDING;
     public final static int STATUS_RUNNING = DownloadManager.STATUS_RUNNING;
@@ -30,16 +35,23 @@ public final class DownloadHelper {
     public final static int STATUS_FAILED = DownloadManager.STATUS_FAILED;
 
     private final LongSparseArray<Params> mCallbacks = new LongSparseArray<>();
+    private final DownloadChangeObserver mObserver = new DownloadChangeObserver(this);
     private final DownloadManager mDM;
     private final Context mContext;
+    private final Scheduler mScheduler;
+    private Disposable mTask;
 
-    public DownloadHelper(Context context) {
+    public DownloadHelper(Context context, Scheduler mScheduler) {
         this.mContext = context.getApplicationContext();
+        this.mScheduler = mScheduler;
         this.mDM = (DownloadManager) mContext.getSystemService(Context.DOWNLOAD_SERVICE);
     }
     public long download(DownloadTask task, IDownloadCallback callback) {
+        File file = new File(mContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
+                FileUtils.getSimpleFileName(task.getSavePath()));
+
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(task.getUrl()));
-        request.setDestinationUri(Uri.fromFile(new File(task.getSavePath())));
+        request.setDestinationUri(Uri.fromFile(file));
 
         callback.onPreDownload(mContext,task, request);
 
@@ -55,17 +67,42 @@ public final class DownloadHelper {
     public void removeCallback(long id){
         mCallbacks.remove(id);
     }
+    public void registerAll(){
+        registerDownloadReceiver();
+        registerDownloadObserver();
+    }
+    public void unregisterAll(){
+        unregisterDownloadReceiver();
+        unregisterDownloadObserver();
+    }
     public void registerDownloadReceiver(){
         IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
         filter.addAction(DownloadManager.ACTION_NOTIFICATION_CLICKED);
         filter.addAction(DownloadManager.ACTION_VIEW_DOWNLOADS);
         mContext.registerReceiver(mReceiver, filter);
     }
+    public void registerDownloadObserver(){
+        mContext.getContentResolver().registerContentObserver(Uri.parse("content://downloads/my_downloads"),
+                true, mObserver);
+    }
     public void unregisterDownloadReceiver(){
         try {
             mContext.unregisterReceiver(mReceiver);
         }catch (Exception e){
             //ignore
+        }
+    }
+    public void unregisterDownloadObserver(){
+        try {
+            mContext.getContentResolver().unregisterContentObserver(mObserver);
+        }catch (Exception e){
+            //ignore
+        }
+    }
+    public void cancelObserve(){
+        if(mTask != null){
+            mTask.dispose();
+            mTask = null;
         }
     }
     public List<Long> getDownloadIds(){
@@ -86,7 +123,6 @@ public final class DownloadHelper {
             queryAll(list);
         }
     }
-
     public void queryAll(List<Long> ids) {
         for (Long id: ids){
             if(!query(id, null)){
@@ -94,7 +130,6 @@ public final class DownloadHelper {
             }
         }
     }
-
     public boolean query(long id, Integer downloadFlags){
         return query(id, downloadFlags, true);
     }
@@ -140,8 +175,10 @@ public final class DownloadHelper {
                 task.setLastModifyTime(lastModifyTime);
                 task.setReason(reason);
                 task.setStatus(status);
-                task.setUri(Uri.parse(uriStr));
+                task.setLocalUri(Uri.parse(uriStr));
                 return true;
+            }else {
+                System.err.println("no download state for: " + task.getUrl());
             }
         }finally {
             cursor.close();
@@ -183,6 +220,18 @@ public final class DownloadHelper {
             }
         }
     };
+
+    @Override
+    public void onContentChanged(boolean selfChange) {
+        Log.d("DH", "onContentChanged: selfChange = " + selfChange);
+        mTask = mScheduler.newWorker().schedule(new Runnable() {
+            @Override
+            public void run() {
+                queryAll();
+            }
+        });
+    }
+
     private static class Params{
         final DownloadTask task;
         final IDownloadCallback callback;
