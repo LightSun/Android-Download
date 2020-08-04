@@ -6,7 +6,7 @@
 
     <application>
         <provider
-            android:name="androidx.core.content.FileProvider"
+            android:name=".DHFileProvider"
             android:authorities="com.heaven7.android.download.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
