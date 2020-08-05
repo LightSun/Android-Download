@@ -14,6 +14,7 @@ import static android.app.Activity.RESULT_OK;
  * @since 1.0.2
  */
 public final class ApkInstaller {
+    public static final int REQ_INSTALL_APK = 8424;
 
     private final Context context;
     private int mReq;
@@ -26,6 +27,10 @@ public final class ApkInstaller {
         mReq = req;
         mUri = uri;
         InstallUtils.activeInstall(context, uri, req);
+    }
+
+    public void install(Uri uri){
+       install(uri, REQ_INSTALL_APK);
     }
 
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data){
