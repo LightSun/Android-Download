@@ -16,7 +16,7 @@ import static android.app.Activity.RESULT_OK;
  * @author heaven7
  * @since 1.0.2
  */
-public final class ApkInstaller {
+public class ApkInstaller {
     public static final int REQ_INSTALL_APK = 8424;
 
     private final Context context;
