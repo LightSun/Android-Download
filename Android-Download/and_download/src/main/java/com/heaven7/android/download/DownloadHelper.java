@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
-import android.util.Log;
 
 import androidx.collection.LongSparseArray;
 
@@ -46,6 +45,24 @@ public final class DownloadHelper implements DownloadChangeObserver.Callback {
         this.mScheduler = mScheduler;
         this.mDM = (DownloadManager) mContext.getSystemService(Context.DOWNLOAD_SERVICE);
     }
+
+    /**
+     * download the url
+     * @param url the url
+     * @param callback the download callback
+     * @return the download id
+     * @since 1.0.3
+     */
+    public long download(String url, IDownloadCallback callback) {
+        return download(new DownloadTask.Builder().setUrl(url).build(), callback);
+    }
+
+    /**
+     * do download
+     * @param task the download task
+     * @param callback the callback
+     * @return the download id
+     */
     public long download(DownloadTask task, IDownloadCallback callback) {
         File file = new File(mContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
                 FileUtils.getSimpleFileName(task.getUrl()));
@@ -61,6 +78,12 @@ public final class DownloadHelper implements DownloadChangeObserver.Callback {
         mCallbacks.put(id, new Params(task, callback));
         return id;
     }
+
+    /**
+     * cancel download
+     * @param id the download id
+     * @return true if canceled
+     */
     public boolean cancel(long id){
         mCallbacks.remove(id);
         return mDM.remove(id) > 0;
