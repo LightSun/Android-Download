@@ -73,6 +73,7 @@ public abstract class SimpleDownloadCallback implements IDownloadCallback {
 
             default:
                 System.err.println("download known error: " + task.getStatus());
+                disposeTask();
                 onUnknownError(context, task);
                 break;
         }
