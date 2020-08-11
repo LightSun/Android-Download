@@ -1,25 +1,21 @@
 package com.heaven7.android.download;
 
-import android.app.Application;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
-import com.liulishuo.filedownloader.BaseDownloadTask;
-import com.liulishuo.filedownloader.FileDownloadSampleListener;
-import com.liulishuo.filedownloader.FileDownloader;
-import com.liulishuo.filedownloader.connection.FileDownloadUrlConnection;
+import com.heaven7.java.base.util.Disposable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Logger;
 
 public abstract class SimpleDownloadCallback implements IDownloadCallback {
 
     private static final String TAG = "SimpleDownloadCallback";
     private final AtomicBoolean mSuccessed = new AtomicBoolean();
     private final DownloadHelper dh;
+    /** task for download2 */
+    private Disposable mTask;
 
     public SimpleDownloadCallback(DownloadHelper dh) {
         this.dh = dh;
@@ -54,20 +50,24 @@ public abstract class SimpleDownloadCallback implements IDownloadCallback {
     public void onQueryResult(Context context, DownloadTask task) {
         switch (task.getStatus()) {
             case DownloadHelper.STATUS_PAUSED:
+                disposeTask();
                 onDownloadPaused(context, task);
                 break;
             case DownloadHelper.STATUS_PENDING:
                 onDownloadPending(context, task);
                 break;
             case DownloadHelper.STATUS_RUNNING:
+                disposeTask();
                 onDownloadRunning(context, task);
                 break;
             case DownloadHelper.STATUS_SUCCESSFUL:
+                disposeTask();
                 if(mSuccessed.compareAndSet(false, true)){
                     onDownloadSuccess(context, task);
                 }
                 break;
             case DownloadHelper.STATUS_FAILED:
+                disposeTask();
                 onDownloadFailed(context, task);
                 break;
 
@@ -84,7 +84,7 @@ public abstract class SimpleDownloadCallback implements IDownloadCallback {
 
     protected void onDownloadPending(final Context context, final DownloadTask task) {
         //if pending 5 seconds. we use another to download.
-        scheduleDelay(new Runnable() {
+        mTask = scheduleDelay(new Runnable() {
             @Override
             public void run() {
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -117,7 +117,12 @@ public abstract class SimpleDownloadCallback implements IDownloadCallback {
      * @param delay the delay
      * @since 1.0.4
      */
-    protected void scheduleDelay(Runnable task, long delay){
+    protected abstract Disposable scheduleDelay(Runnable task, long delay);
 
+    private void disposeTask(){
+        if(mTask != null){
+            mTask.dispose();
+            mTask = null;
+        }
     }
 }

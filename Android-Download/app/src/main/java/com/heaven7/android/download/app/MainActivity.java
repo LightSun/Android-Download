@@ -1,5 +1,6 @@
 package com.heaven7.android.download.app;
 
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -36,7 +37,13 @@ public class MainActivity extends AppCompatActivity {
         DownloadTask task = new DownloadTask();
         task.setUrl(url);
          Downloader.getDownloadHelper().download(task, new SimpleDownloadCallback(Downloader.getDownloadHelper()) {
-            @Override
+             @Override
+             public void onPreDownload(Context mContext, DownloadTask task, DownloadManager.Request request) {
+                 super.onPreDownload(mContext, task, request);
+                // request.setAllowedOverRoaming(true); //开启漫游后google系列手机下载错误的地址时会一直pending.
+             }
+
+             @Override
             protected void onDownloadSuccess(Context context, DownloadTask task) {
                 setPermission(task.getSavePath());
                 Logger.d(TAG, "onDownloadSuccess", task.getUrl());
@@ -46,7 +53,13 @@ public class MainActivity extends AppCompatActivity {
                 mInstaller.install(uriForFile);
             }
 
-            @Override
+             @Override
+             protected void onDownloadPending(Context context, DownloadTask task) {
+                 Logger.d(TAG, "onDownloadPending", task.getUrl());
+                 super.onDownloadPending(context, task);
+             }
+
+             @Override
             protected void onDownloadFailed(Context context, DownloadTask task) {
                 Logger.d(TAG, "onDownloadFailed", task.getUrl());
             }
