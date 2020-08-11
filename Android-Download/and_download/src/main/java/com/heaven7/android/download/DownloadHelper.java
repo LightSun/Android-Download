@@ -199,12 +199,17 @@ public final class DownloadHelper implements DownloadChangeObserver.Callback {
                 task.setLastModifyTime(lastModifyTime);
                 task.setReason(reason);
                 task.setStatus(status);
-                task.setLocalUri(Uri.parse(uriStr));
+                if(uriStr != null){
+                    task.setLocalUri(Uri.parse(uriStr));
+                }
                 return true;
             }else {
                 System.err.println("no download state for: " + task.getUrl());
             }
-        }finally {
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        finally {
             cursor.close();
         }
         return false;

@@ -31,7 +31,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClickDownload(View view) {
-        String url = "https://d2.aoc5566.com//android2/20190325/360shoujizhushou_ali213.apk";
+        //String url = "https://d2.aoc5566.com//android2/20190325/360shoujizhushou_ali213.apk";
+        String url = "https://common-dev.oss-cn-beijing.aliyuncs.com/shipper-debug.apk";
         DownloadTask task = new DownloadTask();
         task.setUrl(url);
          Downloader.getDownloadHelper().download(task, new SimpleDownloadCallback(Downloader.getDownloadHelper()) {

@@ -59,8 +59,18 @@ public abstract class SimpleDownloadCallback implements IDownloadCallback {
             case DownloadHelper.STATUS_FAILED:
                 onDownloadFailed(context, task);
                 break;
+
+            default:
+                System.err.println("download known error: " + task.getStatus());
+                onUnknownError(context, task);
+                break;
         }
     }
+
+    protected void onUnknownError(Context context, DownloadTask task) {
+
+    }
+
     protected void onDownloadPending(Context context, DownloadTask task) {
 
     }
