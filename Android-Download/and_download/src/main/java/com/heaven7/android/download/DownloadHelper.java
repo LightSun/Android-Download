@@ -47,6 +47,14 @@ public final class DownloadHelper implements DownloadChangeObserver.Callback {
     }
 
     /**
+     * get scheduler
+     * @since 1.0.4
+     * @return the scheduler
+     */
+    public Scheduler getScheduler() {
+        return mScheduler;
+    }
+    /**
      * download the url
      * @param url the url
      * @param callback the download callback

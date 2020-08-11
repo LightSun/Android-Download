@@ -17,7 +17,8 @@ public class DownloadTask {
     private int status;           // download state
     private Uri localUri;
 
-    public DownloadTask(){}
+    private int extraId;
+
     protected DownloadTask(DownloadTask.Builder builder) {
         this.url = builder.url;
         this.savePath = builder.savePath;
@@ -29,6 +30,13 @@ public class DownloadTask {
         this.lastModifyTime = builder.lastModifyTime;
         this.status = builder.status;
         this.localUri = builder.localUri;
+        this.extraId = builder.extraId;
+    }
+
+    public DownloadTask(){}
+
+    public void setExtraId(int extraId) {
+        this.extraId = extraId;
     }
 
     public void setLocalUri(Uri localUri) {
@@ -111,6 +119,10 @@ public class DownloadTask {
         return this.localUri;
     }
 
+    public int getExtraId() {
+        return this.extraId;
+    }
+
     public static class Builder {
         private String url;
         private String savePath;
@@ -122,6 +134,7 @@ public class DownloadTask {
         private long lastModifyTime; // in mills
         private int status;           // download state
         private Uri localUri;
+        private int extraId;
 
         public Builder setUrl(String url) {
             this.url = url;
@@ -170,6 +183,11 @@ public class DownloadTask {
 
         public Builder setLocalUri(Uri localUri) {
             this.localUri = localUri;
+            return this;
+        }
+
+        public Builder setExtraId(int extraId) {
+            this.extraId = extraId;
             return this;
         }
 

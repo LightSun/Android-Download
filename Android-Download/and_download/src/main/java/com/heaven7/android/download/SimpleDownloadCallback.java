@@ -1,12 +1,23 @@
 package com.heaven7.android.download;
 
+import android.app.Application;
 import android.app.DownloadManager;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+
+import com.liulishuo.filedownloader.BaseDownloadTask;
+import com.liulishuo.filedownloader.FileDownloadSampleListener;
+import com.liulishuo.filedownloader.FileDownloader;
+import com.liulishuo.filedownloader.connection.FileDownloadUrlConnection;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Logger;
 
 public abstract class SimpleDownloadCallback implements IDownloadCallback {
 
+    private static final String TAG = "SimpleDownloadCallback";
     private final AtomicBoolean mSuccessed = new AtomicBoolean();
     private final DownloadHelper dh;
 
@@ -71,8 +82,21 @@ public abstract class SimpleDownloadCallback implements IDownloadCallback {
 
     }
 
-    protected void onDownloadPending(Context context, DownloadTask task) {
-
+    protected void onDownloadPending(final Context context, final DownloadTask task) {
+        //if pending 5 seconds. we use another to download.
+        scheduleDelay(new Runnable() {
+            @Override
+            public void run() {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Downloader2.init(context);
+                        Downloader2 d = new Downloader2(SimpleDownloadCallback.this);
+                        d.download(context, task);
+                    }
+                });
+            }
+        }, 5000);
     }
     protected void onDownloadSuccess(Context context, DownloadTask task) {
 
@@ -84,6 +108,16 @@ public abstract class SimpleDownloadCallback implements IDownloadCallback {
 
     }
     protected void onDownloadRunning(Context context, DownloadTask task) {
+
+    }
+
+    /**
+     * schedule the download task delay
+     * @param task the task
+     * @param delay the delay
+     * @since 1.0.4
+     */
+    protected void scheduleDelay(Runnable task, long delay){
 
     }
 }
