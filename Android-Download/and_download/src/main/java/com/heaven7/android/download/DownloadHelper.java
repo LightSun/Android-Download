@@ -170,13 +170,13 @@ public final class DownloadHelper implements DownloadChangeObserver.Callback {
         if(params == null){
             return false;
         }
-        if(query0(id, downloadFlags, params.task)){
-            if(callback){
-                params.callback.onQueryResult(mContext,  params.task);
-            }
-            return true;
+        if(!query0(id, downloadFlags, params.task)){
+            params.task.setStatus(DownloadHelper.STATUS_FAILED);
         }
-        return false;
+        if(callback){
+            params.callback.onQueryResult(mContext,  params.task);
+        }
+        return true;
     }
     private boolean query0(long id, Integer downloadFlags, DownloadTask task){
         DownloadManager.Query query = new DownloadManager.Query();
@@ -208,11 +208,12 @@ public final class DownloadHelper implements DownloadChangeObserver.Callback {
             }
         }catch (Exception e){
             e.printStackTrace();
+            return false;
         }
         finally {
             cursor.close();
         }
-        return false;
+        return true;
     }
     private void dispatchNotificationClicked(long id){
         Params params = mCallbacks.get(id);
