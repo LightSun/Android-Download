@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 
-import androidx.annotation.RequiresApi;
 
 /**
  * the install utils used to install apk
@@ -26,7 +25,7 @@ public final class InstallUtils {
         }
         installAPK(activity, apkUri);
     }
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    //@RequiresApi(api = Build.VERSION_CODES.O)
     private static void startInstallPermissionSettingActivity(Context context, int req) {
         if (context == null){
             return;
@@ -35,7 +34,7 @@ public final class InstallUtils {
         Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, uri);
         ((Activity)context).startActivityForResult(intent, req);
     }
-    @RequiresApi(api = Build.VERSION_CODES.O)
+   // @RequiresApi(api = Build.VERSION_CODES.O)
     private static boolean isHasInstallPermissionWithO(Context context){
         if (context == null){
             return false;

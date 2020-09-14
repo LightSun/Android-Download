@@ -1,11 +1,8 @@
 package com.heaven7.android.download;
 
-import android.app.Application;
 import android.content.Context;
 
 import com.heaven7.java.base.util.Scheduler;
-import com.liulishuo.filedownloader.FileDownloader;
-import com.liulishuo.filedownloader.connection.FileDownloadUrlConnection;
 
 /**
  * downloader just wrap the {@linkplain DownloadHelper} to use easily.

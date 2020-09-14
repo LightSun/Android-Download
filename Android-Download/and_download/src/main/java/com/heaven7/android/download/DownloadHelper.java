@@ -8,8 +8,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
-
-import androidx.collection.LongSparseArray;
+import android.util.LongSparseArray;
 
 import com.heaven7.java.base.util.Disposable;
 import com.heaven7.java.base.util.FileUtils;

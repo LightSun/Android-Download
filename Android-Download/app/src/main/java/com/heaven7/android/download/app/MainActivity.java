@@ -36,14 +36,13 @@ public class MainActivity extends AppCompatActivity {
         String url = "https://common-dev.oss-cn-beijing.aliyuncs.com/shipper-debug.apk";
         DownloadTask task = new DownloadTask();
         task.setUrl(url);
-         Downloader.getDownloadHelper().download(task, new SimpleDownloadCallback(Downloader.getDownloadHelper()) {
-             @Override
-             public void onPreDownload(Context mContext, DownloadTask task, DownloadManager.Request request) {
-                 super.onPreDownload(mContext, task, request);
+        Downloader.getDownloadHelper().download(task, new SimpleDownloadCallback(Downloader.getDownloadHelper()) {
+            @Override
+            public void onPreDownload(Context mContext, DownloadTask task, DownloadManager.Request request) {
+                super.onPreDownload(mContext, task, request);
                 // request.setAllowedOverRoaming(true); //开启漫游后google系列手机下载错误的地址时会一直pending.
-             }
-
-             @Override
+            }
+            @Override
             protected void onDownloadSuccess(Context context, DownloadTask task) {
                 setPermission(task.getSavePath());
                 Logger.d(TAG, "onDownloadSuccess", task.getUrl());
@@ -53,25 +52,30 @@ public class MainActivity extends AppCompatActivity {
                 mInstaller.install(uriForFile);
             }
 
-             @Override
-             protected void onDownloadPending(Context context, DownloadTask task) {
-                 Logger.d(TAG, "onDownloadPending", task.getUrl());
-                 super.onDownloadPending(context, task);
-             }
+            @Override
+            protected void onDownloadPending(Context context, DownloadTask task) {
+                Logger.d(TAG, "onDownloadPending", task.getUrl());
+                super.onDownloadPending(context, task);
+            }
 
-             @Override
+            @Override
             protected void onDownloadFailed(Context context, DownloadTask task) {
                 Logger.d(TAG, "onDownloadFailed", task.getUrl());
             }
 
             @Override
             protected void onDownloadRunning(Context context, DownloadTask task) {
-                Logger.d(TAG, "onDownloadRunning",  "percent = "
+                Logger.d(TAG, "onDownloadRunning", "percent = "
                         + (task.getDownloadBytes() * 1f / task.getTotalBytes()) * 100 + "/100"
                 );
             }
+            @Override
+            protected Disposable scheduleDelay(Runnable task, long delay) {
+                return null;
+            }
         });
     }
+
     private void setPermission(String absolutePath) {
         String command = "chmod " + "777" + " " + absolutePath;
         Runtime runtime = Runtime.getRuntime();
@@ -96,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(mTask != null){
+        if (mTask != null) {
             mTask.dispose();
             mTask = null;
         }

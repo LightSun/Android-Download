@@ -7,7 +7,7 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.util.Log;
 
-import androidx.annotation.Nullable;
+import com.heaven7.java.base.anno.Nullable;
 
 import static android.app.Activity.RESULT_OK;
 
